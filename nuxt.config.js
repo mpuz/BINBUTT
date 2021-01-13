@@ -1,5 +1,5 @@
 module.exports = {
-  target: 'static',
+  //target: 'static',
 
   plugins: [
     // .client will only be run client side on initial app load
