@@ -1,0 +1,48 @@
+Arguments: 
+  /usr/local/bin/node /usr/share/yarn/bin/yarn.js
+
+PATH: 
+  /home/user/anaconda3/bin:/home/user/anaconda3/condabin:/home/user/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/user/.npm-global/bin
+
+Yarn version: 
+  1.22.5
+
+Node version: 
+  12.16.2
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: http://github.com/component/emitter/archive/1.0.1.tar.gz: ENOENT: no such file or directory, open '/home/user/snap/codium/common/.cache/yarn/v6/.tmp/c093b6de586a0ae2ebbab27ba3b833a5/.yarn-tarball.tgz'
+
+npm manifest: 
+  {
+    "name": "binance-buttons",
+    "version": "1.0.0",
+    "description": "",
+    "private": true,
+    "scripts": {
+      "dev": "nuxt",
+      "build": "nuxt build",
+      "start": "nuxt start",
+      "generate": "nuxt generate"
+    },
+    "dependencies": {
+      "@nuxtjs/pwa": "latest",
+      "dgram": "^1.0.1",
+      "dns": "^0.2.2",
+      "fs": "0.0.1-security",
+      "net": "^1.0.2",
+      "node-binance-api": "^0.12.4",
+      "nuxt": "latest",
+      "nuxt7": "latest",
+      "tls": "0.0.1"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
