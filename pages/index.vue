@@ -1,25 +1,26 @@
 <template>
-  <f7-page class="noscroll">
-    <f7-navbar class="noscroll">
-      <f7-nav-left>
-        <f7-button
-          small
-          class="display-flex panel-open"
-          icon-f7="bars"
-          href="#"
-          data-panel="#panel-nested"
-        ></f7-button>
-      </f7-nav-left>
-      <f7-nav-title>{{ "BTCUSDT: " + ticker }}</f7-nav-title>
-      <f7-nav-right>
-        <f7-button
-          small
-          class="display-flex"
-          icon-f7="gear_alt"
-          href="/settings/"
-        ></f7-button>
-      </f7-nav-right>
-      <!-- <f7-nav-right>
+  <no-ssr>
+    <f7-page class="noscroll">
+      <f7-navbar class="noscroll">
+        <f7-nav-left>
+          <f7-button
+            small
+            class="display-flex panel-open"
+            icon-f7="bars"
+            href="#"
+            data-panel="#panel-nested"
+          ></f7-button>
+        </f7-nav-left>
+        <f7-nav-title>{{ "BTCUSDT: " + ticker }}</f7-nav-title>
+        <f7-nav-right>
+          <f7-button
+            small
+            class="display-flex"
+            icon-f7="gear_alt"
+            href="/settings/"
+          ></f7-button>
+        </f7-nav-right>
+        <!-- <f7-nav-right>
         <a
           class="link icon-only searchbar-enable"
           data-searchbar=".searchbar-components"
@@ -29,7 +30,7 @@
         </a>
       </f7-nav-right> -->
 
-      <!-- <form
+        <!-- <form
         data-search-container=".components-list"
         data-search-in="a"
         class="searchbar searchbar-expandable searchbar-components searchbar-init"
@@ -43,119 +44,120 @@
           <span class="searchbar-disable-button">Cancel</span>
         </div>
       </form> -->
-    </f7-navbar>
+      </f7-navbar>
 
-    <div
-      class="panel panel-left panel-cover panel-init"
-      id="panel-nested"
-      data-container-el="#panel-page"
-    >
-      <div class="page">
-        <div class="page-content">
-          <f7-button
-            small
-            class="panel-close float-left"
-            icon-f7="close"
-            href="#"
-          ></f7-button>
-          <p class="block-title">Trades History</p>
-          <div class="list simple-list">
-            <ul>
-              <li v-for="trade in trades" v-bind:key="trade[0]">
-                <span class="text-align-left">
-                  {{
-                    new Date(trade[1][0].time)
-                      .toISOString()
-                      .replace("T", " ")
-                      .split(".")[0]
-                  }}
-                  <b>{{ trade[1][0].side == "SELL" ? "SHORT" : "LONG" }}</b>
-                </span>
-                <span class="text-align-right">
-                  {{
-                    trade[1]
-                      .map((x) => parseFloat(x.qty))
-                      .reduce((a, b) => a + b, 0)
-                      .toFixed(4)
-                  }}
-                </span>
-              </li>
-            </ul>
+      <div
+        class="panel panel-left panel-cover panel-init"
+        id="panel-nested"
+        data-container-el="#panel-page"
+      >
+        <div class="page">
+          <div class="page-content">
+            <f7-button
+              small
+              class="panel-close float-left"
+              icon-f7="close"
+              href="#"
+            ></f7-button>
+            <p class="block-title">Trades History</p>
+            <div class="list simple-list">
+              <ul>
+                <li v-for="trade in trades" v-bind:key="trade[0]">
+                  <span class="text-align-left">
+                    {{
+                      new Date(trade[1][0].time)
+                        .toISOString()
+                        .replace("T", " ")
+                        .split(".")[0]
+                    }}
+                    <b>{{ trade[1][0].side == "SELL" ? "SHORT" : "LONG" }}</b>
+                  </span>
+                  <span class="text-align-right">
+                    {{
+                      trade[1]
+                        .map((x) => parseFloat(x.qty))
+                        .reduce((a, b) => a + b, 0)
+                        .toFixed(4)
+                    }}
+                  </span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <!-- <f7-list>
-      <f7-list-item title="Settings" link="/settings/"></f7-list-item>
-    </f7-list> -->
 
-    <f7-block-title class="searchbar-found" strong
-      >Status:
-      <span v-bind:style="{ color: online ? 'green' : 'red' }">{{
-        online ? "ONLINE" : "OFFLINE"
-      }}</span>
-      <span> | {{ usdtbalance }} USDT | {{ bnbbalance }} BNB</span>
-    </f7-block-title>
+      <f7-block>
+        <VueTradingView :options="options" />
+      </f7-block>
 
-    <f7-block-title
-      >{{
-        position && position[0].positionAmt > 0
-          ? "LONG | "
-          : position && position[0].positionAmt < 0
-          ? "SHORT | "
-          : "NO POSITIONS | "
-      }}
-      PnL: USDT
-      {{
-        parseFloat(position && position[0].unRealizedProfit).toFixed(4)
-      }}</f7-block-title
-    >
-    <f7-block strong>
-      <f7-row>
-        <f7-col>
-          <f7-button large fill color="green" @click="order('BUY')"
-            >LONG</f7-button
-          >
-        </f7-col>
-        <f7-col>
-          <f7-button large fill color="blue" @click="exit()">EXIT</f7-button>
-        </f7-col>
-        <f7-col>
-          <f7-button large fill color="red" @click="order('SELL')"
-            >SHORT</f7-button
-          >
-        </f7-col>
-      </f7-row>
-    </f7-block>
+      <f7-block>
+        <p>
+          Status:
+          <span v-bind:style="{ color: online ? 'green' : 'red' }">{{
+            online ? "ONLINE" : "OFFLINE"
+          }}</span>
+          <span> | {{ usdtbalance }} USDT | {{ bnbbalance }} BNB</span>
+        </p>
 
-    <f7-block strong>
-      <f7-range
-        :min="0"
-        :max="100"
-        :label="true"
-        :step="1"
-        :scale="true"
-        :scale-steps="5"
-        :scale-sub-steps="4"
-        :value="amount"
-        @range:change="onAmountChange"
-      />
-      <p>AMOUNT: {{ amount }} % of DEPOSIT</p>
-      <f7-range
-        :min="0"
-        :max="125"
-        :label="true"
-        :step="5"
-        :value="leverage"
-        :scale="true"
-        :scale-steps="5"
-        :scale-sub-steps="5"
-        @range:change="onMarginChange"
-      />
-      <p>LEVERAGE: {{ leverage }}X</p>
-    </f7-block>
+        <p>
+          {{
+            position && position[0].positionAmt > 0
+              ? "LONG | "
+              : position && position[0].positionAmt < 0
+              ? "SHORT | "
+              : "NO POSITIONS | "
+          }}
+          PnL: USDT
+          {{ parseFloat(position && position[0].unRealizedProfit).toFixed(4) }}
+        </p>
+      </f7-block>
+      <f7-block>
+        <f7-row>
+          <f7-col>
+            <f7-button large fill color="green" @click="order('BUY')"
+              >LONG</f7-button
+            >
+          </f7-col>
+          <f7-col>
+            <f7-button large fill color="blue" @click="exit()">EXIT</f7-button>
+          </f7-col>
+          <f7-col>
+            <f7-button large fill color="red" @click="order('SELL')"
+              >SHORT</f7-button
+            >
+          </f7-col>
+        </f7-row>
+      </f7-block>
 
-    <!-- <f7-block strong>
+      <f7-block strong>
+        <f7-range
+          :min="0"
+          :max="100"
+          :label="true"
+          :step="1"
+          :scale="true"
+          :scale-steps="5"
+          :scale-sub-steps="4"
+          :value="amount"
+          @range:change="onAmountChange"
+        />
+        <p>AMOUNT: {{ amount }} % of DEPOSIT</p>
+        <f7-range
+          :min="0"
+          :max="125"
+          :label="true"
+          :step="5"
+          :value="leverage"
+          :scale="true"
+          :scale-steps="5"
+          :scale-sub-steps="5"
+          @range:change="onMarginChange"
+        />
+        <p>LEVERAGE: {{ leverage }}X</p>
+      </f7-block>
+
+      <!-- <f7-block strong>
       <f7-segmented tag="p" raised>
         <f7-button @click="() => (gaugeValue = 0)">0%</f7-button>
         <f7-button @click="() => (gaugeValue = 0.25)">25%</f7-button>
@@ -164,18 +166,37 @@
         <f7-button @click="() => (gaugeValue = 1)">100%</f7-button>
       </f7-segmented>
     </f7-block> -->
-  </f7-page>
+    </f7-page>
+  </no-ssr>
 </template>
 
 <script>
 import Binance from "binance-api-node";
 import { mapValues, omit, groupBy } from "lodash";
+import VueTradingView from "vue-trading-view/src/vue-trading-view";
 
 var client = null;
 
 export default {
+  // props: {
+  //   msg: String,
+  // },
+  components: {
+    VueTradingView,
+  },
+
   data() {
     return {
+      options: {
+        autosize: true,
+        symbol: "BINANCE:BTCPERP",
+        theme: "light",
+        interval: "5",
+        style: "1",
+        hide_top_toolbar: true,
+        hide_legend: true,
+        timezone: "Etc/UTC",
+      },
       amount: 5,
       leverage: 10,
       ticker: "",
@@ -186,9 +207,19 @@ export default {
       position: null,
       trades: null,
       currentOrder: null,
+      candles: [],
     };
   },
   methods: {
+    async getCandles() {
+      let candles = await client.futuresCandles({
+        symbol: "BTCUSDT",
+        interval: "5m",
+        limit: 100,
+      });
+      console.log(candles);
+      this.candles = candles;
+    },
     async checkPosition() {
       let position = await client.futuresPositionRisk({
         symbol: "BTCUSDT",
@@ -303,21 +334,22 @@ export default {
     //get balance
 
     this.getBalance();
+    this.getCandles();
     // let timerId = setInterval(() => {
     //   this.online = client.futuresTime().then((time) => {
     //     console.log(time);
     //     return time;
     //   });
     // }, 5000);
-
-    client.ws.trades("BTCUSDT", (trade) => {
-      //console.log(trade);
-      this.ticker = parseFloat(trade.price).toFixed(4);
-    });
-
-    // client.ws.futuresUser((msg) => {
-    //   console.log(msg);
-    // });
+    if (process.client) {
+      client.ws.trades("BTCUSDT", (trade) => {
+        //console.log(trade);
+        this.ticker = parseFloat(trade.price).toFixed(4);
+      });
+      // client.ws.candles("BTCUSDT", "5m", (msg) => {
+      //   console.log(msg);
+      // });
+    }
 
     // this.ticker = await client
     //   .futuresMarkPrice({ symbol: "BTCUSDT" })
