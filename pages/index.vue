@@ -1,6 +1,6 @@
 <template>
-  <f7-page>
-    <f7-navbar>
+  <f7-page class="noscroll">
+    <f7-navbar class="noscroll">
       <f7-nav-left>
         <f7-button
           small
@@ -216,6 +216,15 @@ export default {
       console.log(res);
       return res;
     },
+    async getBalance() {
+      this.balance = await client.futuresAccountBalance();
+      console.log(this.balance);
+      if (this.balance[0].balance) {
+        this.usdtbalance = parseFloat(this.balance[0].balance).toFixed(0);
+        this.bnbbalance = parseFloat(this.balance[1].balance).toFixed(2);
+        this.online = true;
+      }
+    },
     async getHistory() {
       let trades = await client.futuresUserTrades({
         symbol: "BTCUSDT",
@@ -268,6 +277,7 @@ export default {
       console.log(closeOrder);
       this.currentOrder = null;
       clearInterval(this.positionInterval);
+      this.getBalance();
     },
   },
 
@@ -291,13 +301,8 @@ export default {
     setInterval(this.checkPosition.bind(this), 3000);
 
     //get balance
-    this.balance = await client.futuresAccountBalance();
-    console.log(this.balance);
-    if (this.balance[0].balance) {
-      this.usdtbalance = parseFloat(this.balance[0].balance).toFixed(0);
-      this.bnbbalance = parseFloat(this.balance[1].balance).toFixed(2);
-      this.online = true;
-    }
+
+    this.getBalance();
     // let timerId = setInterval(() => {
     //   this.online = client.futuresTime().then((time) => {
     //     console.log(time);
@@ -324,4 +329,8 @@ export default {
 };
 </script>
 <style>
+.noscroll {
+  overscroll-behavior: contain !important;
+  position: fixed !important;
+}
 </style>
