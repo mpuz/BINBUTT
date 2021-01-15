@@ -4,7 +4,8 @@ export const state = () => ({
     key: '',
     secret: '',
     amount: 5,
-    leverage: 10
+    leverage: 10,
+    interval: '5'
 })
 
 export const mutations = {
@@ -30,6 +31,12 @@ export const mutations = {
         state.leverage = value
         if (process.client) {
             localStorage.setItem('leverage', value)
+        }
+    },
+    setInterval(state, value) {
+        state.interval = value
+        if (process.client) {
+            localStorage.setItem('interval', value)
         }
     }
 }

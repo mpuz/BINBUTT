@@ -20,30 +20,6 @@
             href="/settings/"
           ></f7-button>
         </f7-nav-right>
-        <!-- <f7-nav-right>
-        <a
-          class="link icon-only searchbar-enable"
-          data-searchbar=".searchbar-components"
-        >
-          <i class="icon f7-icons ios-only">search_strong</i>
-          <i class="icon material-icons md-only">search</i>
-        </a>
-      </f7-nav-right> -->
-
-        <!-- <form
-        data-search-container=".components-list"
-        data-search-in="a"
-        class="searchbar searchbar-expandable searchbar-components searchbar-init"
-      >
-        <div class="searchbar-inner">
-          <div class="searchbar-input-wrap">
-            <input type="search" placeholder="Search components" />
-            <i class="searchbar-icon"></i>
-            <span class="input-clear-button"></span>
-          </div>
-          <span class="searchbar-disable-button">Cancel</span>
-        </div>
-      </form> -->
       </f7-navbar>
 
       <div
@@ -103,27 +79,45 @@
         <p>
           {{
             position && position[0].positionAmt > 0
-              ? "LONG | "
+              ? "LONG: USDT "
               : position && position[0].positionAmt < 0
-              ? "SHORT | "
-              : "NO POSITIONS | "
+              ? "SHORT: USDT "
+              : "NO POSITIONS: "
           }}
-          PnL: USDT
+          {{ position && parseFloat(position[0].notional).toFixed(2) }} | PnL:
+          USDT
           {{ parseFloat(position && position[0].unRealizedProfit).toFixed(4) }}
         </p>
       </f7-block>
       <f7-block>
         <f7-row>
           <f7-col>
-            <f7-button large fill color="green" @click="order('BUY')"
+            <f7-button
+              large
+              fill
+              color="green"
+              @click="order('BUY')"
+              :disabled="processing"
               >LONG</f7-button
             >
           </f7-col>
           <f7-col>
-            <f7-button large fill color="blue" @click="exit()">EXIT</f7-button>
+            <f7-button
+              large
+              fill
+              color="blue"
+              @click="exit()"
+              :disabled="processing"
+              >EXIT</f7-button
+            >
           </f7-col>
           <f7-col>
-            <f7-button large fill color="red" @click="order('SELL')"
+            <f7-button
+              large
+              fill
+              color="red"
+              @click="order('SELL')"
+              :disabled="processing"
               >SHORT</f7-button
             >
           </f7-col>
@@ -197,6 +191,7 @@ export default {
         hide_legend: true,
         timezone: "Etc/UTC",
       },
+      processing: false,
       amount: 5,
       leverage: 10,
       ticker: "",
@@ -208,24 +203,28 @@ export default {
       trades: null,
       currentOrder: null,
       candles: [],
+      checkInt: null,
     };
   },
   methods: {
-    async getCandles() {
-      let candles = await client.futuresCandles({
-        symbol: "BTCUSDT",
-        interval: "5m",
-        limit: 100,
-      });
-      console.log(candles);
-      this.candles = candles;
-    },
+    // async getCandles() {
+    //   let candles = await client.futuresCandles({
+    //     symbol: "BTCUSDT",
+    //     interval: "5m",
+    //     limit: 100,
+    //   });
+    //   console.log(candles);
+    //   this.candles = candles;
+    // },
     async checkPosition() {
       let position = await client.futuresPositionRisk({
         symbol: "BTCUSDT",
       });
       console.log("position", position);
       this.position = position;
+      if (position && position[0].unRealizedProfit != 0) {
+        this.processing = false;
+      }
     },
     onMarginChange(leverage) {
       this.leverage = leverage;
@@ -236,10 +235,6 @@ export default {
       this.$store.commit("setAmount", amount);
     },
     async setMargin(symbol = "BTCUSDT", type = "ISOLATED") {
-      // await client.futuresMarginType({
-      //   symbol: symbol,
-      //   marginType: type,
-      // });
       let res = await client.futuresLeverage({
         symbol: "BTCUSDT",
         leverage: this.leverage,
@@ -266,10 +261,11 @@ export default {
         clist.map((trade) => _.omit(trade, "make"))
       );
       this.trades = Object.entries(grouped).reverse();
-      console.log("trades: ", Object.entries(grouped).reverse());
+      //console.log("trades: ", Object.entries(grouped).reverse());
     },
 
     async order(side) {
+      this.processing = true;
       let setlever = await this.setMargin();
       console.log(setlever);
       if (setlever && setlever.leverage == this.leverage) {
@@ -284,15 +280,17 @@ export default {
           ).toFixed(3),
         });
         this.currentOrder = order;
-        console.log(order);
+        //console.log(order);
+        this.checkInt = setInterval(this.checkPosition.bind(this), 3000);
 
-        this.checkPosition();
+        //this.checkPosition();
       } else {
         alert("Check leverage");
       }
     },
 
     async exit() {
+      this.processing = true;
       this.position = await client.futuresPositionRisk({
         symbol: "BTCUSDT",
       });
@@ -305,10 +303,13 @@ export default {
         //closePosition: true,
         quantity: Math.abs(this.position[0].positionAmt),
       });
-      console.log(closeOrder);
+      //console.log(closeOrder);
       this.currentOrder = null;
-      clearInterval(this.positionInterval);
-      this.getBalance();
+      clearInterval(this.checkInt);
+
+      await this.getBalance();
+      await this.checkPosition();
+      this.processing = false;
     },
   },
 
@@ -322,25 +323,23 @@ export default {
       //getTime: xxx, // time generator function, optional, defaults to () => Date.now()
     });
 
-    //get trade history
+    //set isolated margin
+    // await client.futuresMarginType({
+    //   symbol: "BTCUSDT",
+    //   marginType: "ISOLATED",
+    // });
+
+    //get user's orders history
     this.getHistory();
 
     //get position state
 
     this.checkPosition();
 
-    setInterval(this.checkPosition.bind(this), 3000);
-
     //get balance
 
     this.getBalance();
-    this.getCandles();
-    // let timerId = setInterval(() => {
-    //   this.online = client.futuresTime().then((time) => {
-    //     console.log(time);
-    //     return time;
-    //   });
-    // }, 5000);
+
     if (process.client) {
       client.ws.trades("BTCUSDT", (trade) => {
         //console.log(trade);
@@ -350,13 +349,6 @@ export default {
       //   console.log(msg);
       // });
     }
-
-    // this.ticker = await client
-    //   .futuresMarkPrice({ symbol: "BTCUSDT" })
-    //   .then((res) => {
-    //     console.log(res.markPrice);
-    //     if (res.markPrice) return res.markPrice;
-    //   })
   },
 };
 </script>
