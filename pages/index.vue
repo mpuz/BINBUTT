@@ -218,7 +218,7 @@ export default {
     // },
     async checkPosition() {
       if (!this.$store.state.key && !this.$store.state.secret) {
-        alert("API keys are not set in the Settings");
+        //alert("API keys are not set in the Settings");
         return;
       }
       let position = await client.futuresPositionRisk({
@@ -248,7 +248,7 @@ export default {
     },
     async getBalance() {
       if (!this.$store.state.key && !this.$store.state.secret) {
-        alert("API keys are not set in the Settings");
+        //alert("API keys are not set in the Settings");
         return;
       }
       this.balance = await client.futuresAccountBalance();
@@ -261,7 +261,7 @@ export default {
     },
     async getHistory() {
       if (!this.$store.state.key && !this.$store.state.secret) {
-        alert("API keys are not set in the Settings");
+        //alert("API keys are not set in the Settings");
         return;
       }
       let trades = await client.futuresUserTrades({
