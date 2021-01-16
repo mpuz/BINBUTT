@@ -221,14 +221,15 @@ export default {
         //alert("API keys are not set in the Settings");
         this.processing = true;
         return;
-      }
-      let position = await client.futuresPositionRisk({
-        symbol: "BTCUSDT",
-      });
-      console.log("position", position);
-      this.position = position;
-      if (position && position[0].unRealizedProfit != 0) {
-        this.processing = false;
+      } else {
+        let position = await client.futuresPositionRisk({
+          symbol: "BTCUSDT",
+        });
+        console.log("position", position);
+        this.position = position;
+        if (position && position[0].unRealizedProfit != 0) {
+          this.processing = false;
+        }
       }
     },
     onMarginChange(leverage) {
@@ -253,13 +254,14 @@ export default {
 
         //alert("API keys are not set in the Settings");
         return;
-      }
-      this.balance = await client.futuresAccountBalance();
-      console.log(this.balance);
-      if (this.balance[0].balance) {
-        this.usdtbalance = parseFloat(this.balance[0].balance).toFixed(0);
-        this.bnbbalance = parseFloat(this.balance[1].balance).toFixed(2);
-        this.online = true;
+      } else {
+        this.balance = await client.futuresAccountBalance();
+        console.log(this.balance);
+        if (this.balance[0].balance) {
+          this.usdtbalance = parseFloat(this.balance[0].balance).toFixed(0);
+          this.bnbbalance = parseFloat(this.balance[1].balance).toFixed(2);
+          this.online = true;
+        }
       }
     },
     async getHistory() {
@@ -268,73 +270,77 @@ export default {
 
         //alert("API keys are not set in the Settings");
         return;
+      } else {
+        let trades = await client.futuresUserTrades({
+          symbol: "BTCUSDT",
+        });
+  
+        //grouping by order id
+        var grouped = await _.mapValues(_.groupBy(trades, "orderId"), (clist) =>
+          clist.map((trade) => _.omit(trade, "make"))
+        );
+        this.trades = Object.entries(grouped).reverse();
+        //console.log("trades: ", Object.entries(grouped).reverse());
       }
-      let trades = await client.futuresUserTrades({
-        symbol: "BTCUSDT",
-      });
-
-      //grouping by order id
-      var grouped = await _.mapValues(_.groupBy(trades, "orderId"), (clist) =>
-        clist.map((trade) => _.omit(trade, "make"))
-      );
-      this.trades = Object.entries(grouped).reverse();
-      //console.log("trades: ", Object.entries(grouped).reverse());
     },
 
     async order(side) {
       if (!this.$store.state.key && !this.$store.state.secret) {
         alert("API keys are not set in the Settings");
         return;
-      }
-      this.processing = true;
-      let setlever = await this.setMargin();
-      console.log(setlever);
-      if (setlever && setlever.leverage == this.leverage) {
-        let order = await client.futuresOrder({
-          symbol: "BTCUSDT",
-          side: side,
-          positionSide: "BOTH",
-          type: "MARKET",
-          quantity: (
-            ((this.usdtbalance / 100) * this.amount) /
-            this.ticker
-          ).toFixed(3),
-        });
-        this.currentOrder = order;
-        //console.log(order);
-        this.checkInt = setInterval(this.checkPosition.bind(this), 3000);
-
-        //this.checkPosition();
       } else {
+        this.processing = true;
+        let setlever = await this.setMargin();
+        console.log(setlever);
+        if (setlever && setlever.leverage == this.leverage) {
+          let order = await client.futuresOrder({
+            symbol: "BTCUSDT",
+            side: side,
+            positionSide: "BOTH",
+            type: "MARKET",
+            quantity: (
+              ((this.usdtbalance / 100) * this.amount) /
+              this.ticker
+            ).toFixed(3),
+          });
+          this.currentOrder = order;
+          //console.log(order);
+          this.checkInt = setInterval(this.checkPosition.bind(this), 3000);
+  
+          //this.checkPosition();
+      }else {
         alert("Check leverage");
       }
+      } 
     },
 
     async exit() {
       if (!this.$store.state.key && !this.$store.state.secret) {
         alert("API keys are not set in the Settings");
         return;
-      }
-      this.processing = true;
-      this.position = await client.futuresPositionRisk({
-        symbol: "BTCUSDT",
-      });
-      console.log(this.position[0], this.position[0].positionAmt);
-      let closeOrder = await client.futuresOrder({
-        symbol: "BTCUSDT",
-        side: this.position[0].positionAmt > 0 ? "SELL" : "BUY",
-        positionSide: "BOTH",
-        type: "MARKET",
-        //closePosition: true,
-        quantity: Math.abs(this.position[0].positionAmt),
-      });
-      //console.log(closeOrder);
-      this.currentOrder = null;
-      clearInterval(this.checkInt);
+      } else {
 
-      await this.getBalance();
-      await this.checkPosition();
-      this.processing = false;
+        this.processing = true;
+        this.position = await client.futuresPositionRisk({
+          symbol: "BTCUSDT",
+        });
+        console.log(this.position[0], this.position[0].positionAmt);
+        let closeOrder = await client.futuresOrder({
+          symbol: "BTCUSDT",
+          side: this.position[0].positionAmt > 0 ? "SELL" : "BUY",
+          positionSide: "BOTH",
+          type: "MARKET",
+          //closePosition: true,
+          quantity: Math.abs(this.position[0].positionAmt),
+        });
+        //console.log(closeOrder);
+        this.currentOrder = null;
+        clearInterval(this.checkInt);
+  
+        await this.getBalance();
+        await this.checkPosition();
+        this.processing = false;
+      }
     },
   },
 
