@@ -16,5 +16,5 @@
     "nuxt7": "latest",
     "vue-trading-view": "^1.0.1",
     "vuex": "^3.6.0"
-  },
+  }
 }
