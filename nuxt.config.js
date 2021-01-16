@@ -45,7 +45,10 @@ module.exports = {
 
   // Framework7 Config
   framework7: {
-    // ...
+    app: {
+      theme: 'auto'
+    }
+
   },
 
   // Build configuration
@@ -54,9 +57,9 @@ module.exports = {
     extractCSS: true,
 
     // You can extend webpack config here
-    extend(config) {
-      // ...
-    }
+    //extend(config) {
+    // ...
+    // }
   },
 
   // Additional CSS configuration
