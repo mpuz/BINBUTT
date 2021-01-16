@@ -1,9 +1,9 @@
 module.exports = {
   // target: 'static',
 
-  server: {
-    host: '0'
-  },
+  // server: {
+  //   host: '0'
+  // },
 
   head: {
     title: "BINBUT",

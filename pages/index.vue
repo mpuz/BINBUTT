@@ -219,6 +219,7 @@ export default {
     async checkPosition() {
       if (!this.$store.state.key && !this.$store.state.secret) {
         //alert("API keys are not set in the Settings");
+        this.processing = true;
         return;
       }
       let position = await client.futuresPositionRisk({
@@ -248,6 +249,8 @@ export default {
     },
     async getBalance() {
       if (!this.$store.state.key && !this.$store.state.secret) {
+        this.processing = true;
+
         //alert("API keys are not set in the Settings");
         return;
       }
@@ -261,6 +264,8 @@ export default {
     },
     async getHistory() {
       if (!this.$store.state.key && !this.$store.state.secret) {
+        this.processing = true;
+
         //alert("API keys are not set in the Settings");
         return;
       }
