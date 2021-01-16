@@ -217,7 +217,7 @@ export default {
     //   this.candles = candles;
     // },
     async checkPosition() {
-      if (!this.$store.state.key && !this.store.state.secret) {
+      if (!this.$store.state.key && !this.$store.state.secret) {
         alert("API keys are not set in the Settings");
         return;
       }
@@ -247,7 +247,7 @@ export default {
       return res;
     },
     async getBalance() {
-      if (!this.$store.state.key && !this.store.state.secret) {
+      if (!this.$store.state.key && !this.$store.state.secret) {
         alert("API keys are not set in the Settings");
         return;
       }
@@ -260,7 +260,7 @@ export default {
       }
     },
     async getHistory() {
-      if (!this.$store.state.key && !this.store.state.secret) {
+      if (!this.$store.state.key && !this.$store.state.secret) {
         alert("API keys are not set in the Settings");
         return;
       }
@@ -277,7 +277,7 @@ export default {
     },
 
     async order(side) {
-      if (!this.$store.state.key && !this.store.state.secret) {
+      if (!this.$store.state.key && !this.$store.state.secret) {
         alert("API keys are not set in the Settings");
         return;
       }
@@ -306,7 +306,7 @@ export default {
     },
 
     async exit() {
-      if (!this.$store.state.key && !this.store.state.secret) {
+      if (!this.$store.state.key && !this.$store.state.secret) {
         alert("API keys are not set in the Settings");
         return;
       }
