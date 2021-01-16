@@ -217,6 +217,10 @@ export default {
     //   this.candles = candles;
     // },
     async checkPosition() {
+      if (!this.$store.state.key && !this.store.state.secret) {
+        alert("API keys are not set in the Settings");
+        return;
+      }
       let position = await client.futuresPositionRisk({
         symbol: "BTCUSDT",
       });
@@ -243,6 +247,10 @@ export default {
       return res;
     },
     async getBalance() {
+      if (!this.$store.state.key && !this.store.state.secret) {
+        alert("API keys are not set in the Settings");
+        return;
+      }
       this.balance = await client.futuresAccountBalance();
       console.log(this.balance);
       if (this.balance[0].balance) {
@@ -252,6 +260,10 @@ export default {
       }
     },
     async getHistory() {
+      if (!this.$store.state.key && !this.store.state.secret) {
+        alert("API keys are not set in the Settings");
+        return;
+      }
       let trades = await client.futuresUserTrades({
         symbol: "BTCUSDT",
       });
@@ -265,6 +277,10 @@ export default {
     },
 
     async order(side) {
+      if (!this.$store.state.key && !this.store.state.secret) {
+        alert("API keys are not set in the Settings");
+        return;
+      }
       this.processing = true;
       let setlever = await this.setMargin();
       console.log(setlever);
@@ -290,6 +306,10 @@ export default {
     },
 
     async exit() {
+      if (!this.$store.state.key && !this.store.state.secret) {
+        alert("API keys are not set in the Settings");
+        return;
+      }
       this.processing = true;
       this.position = await client.futuresPositionRisk({
         symbol: "BTCUSDT",
