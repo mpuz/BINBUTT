@@ -2,7 +2,7 @@
 Working sample is at https://beatcoin.io
 To trade you need to enter API keays at settings. Orders are placed as market. 
 
-
+![Sample UI](https://github.com/mpuz/BINBUTT/raw/master/beatcoin.io.png)
 
 With only three buttons and couple of settings. Made for easy and fast entering to and exiting from position without mobile Binance app. Uses API keys generated at Binance.com.. Keys are used locally on your device. 
 
