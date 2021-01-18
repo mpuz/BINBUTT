@@ -34,7 +34,7 @@ var _default = function _default(url) {
 otherwise websocket connection will not work.
 
 
-npm build and npm run start will not work, only static version made with "npm run generate" or "nuxt generate" will work
+npm run build will not work, only static version made with "npm run generate" or "nuxt generate" will work
 
 > 
 
