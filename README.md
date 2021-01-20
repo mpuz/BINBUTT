@@ -1,6 +1,6 @@
 # Binance Futures API Trading PWA
 Working sample is at https://beatcoin.io
-To trade you need to enter API keays at settings. Orders are placed as market. 
+To trade you need to enter API keys at settings. Orders are placed as market. 
 
 <img src="https://github.com/mpuz/BINBUTT/raw/master/beatcoin.io.png" alt="UI" width="300"/>
 
@@ -34,7 +34,7 @@ var _default = function _default(url) {
 otherwise websocket connection will not work.
 
 
-npm build and npm run start will not work, only static version made with "npm run generate" or "nuxt generate" will work
+"npm run build" will not work, only static version made with "npm run generate" or "nuxt generate" will work
 
 > 
 

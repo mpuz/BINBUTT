@@ -17,7 +17,12 @@
 
     <f7-block>
       <f7-list>
+        <f7-list-item>
+          <span>Show candles</span>
+          <f7-toggle :checked="showCandles" @change="changeSwitch"></f7-toggle>
+        </f7-list-item>
         <f7-list-item
+          v-if="showCandles"
           class="my-smart-select smart-select smart-select-init"
           title="Tradingview interval"
           smart-select
@@ -37,6 +42,9 @@
         </f7-list-item>
       </f7-list>
     </f7-block>
+    <f7-block-title>Support development</f7-block-title>
+
+    <f7-block>ERC-20: 0xb3Aeb01549B07FA0C5bDFc85f367B1f0Ca224c70 </f7-block>
   </f7-page>
 </template>
 
@@ -47,6 +55,7 @@ export default {
       key: "",
       secret: "",
       interval: "",
+      showCandles: true,
       wordsList: [
         { value: "3", text: "3m" },
         { value: "5", text: "5m" },
@@ -63,7 +72,13 @@ export default {
       ],
     };
   },
-  methods: {},
+  methods: {
+    changeSwitch(obj) {
+      //onsole.log(this)
+      this.showCandles = obj.target.checked;
+      this.$store.commit("showCandles", this.showCandles);
+    },
+  },
   watch: {
     key() {
       this.$store.commit("setKey", this.key);
@@ -73,6 +88,7 @@ export default {
     },
   },
   mounted: async function () {
+    this.showCandles = this.$store.state.showCandles;
     this.key = this.$store.state.key;
     this.secret = this.$store.state.secret;
     this.interval = this.$el.querySelector(".item-after").innerText;

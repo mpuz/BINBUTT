@@ -38,5 +38,11 @@ export const mutations = {
         if (process.client) {
             localStorage.setItem('interval', value)
         }
+    },
+    showCandles(state, value) {
+        state.showCandles = value
+        if (process.client) {
+            localStorage.setItem('showCandles', value)
+        }
     }
 }

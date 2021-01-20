@@ -1,6 +1,6 @@
 <template>
   <no-ssr>
-    <f7-page class="noscroll">
+    <f7-page class="noscroll" @page:beforein="pageAfterInHandler">
       <f7-navbar class="noscroll">
         <f7-nav-left>
           <f7-button
@@ -11,7 +11,10 @@
             data-panel="#panel-nested"
           ></f7-button>
         </f7-nav-left>
-        <f7-nav-title>{{ "BTCUSDT: " + ticker }}</f7-nav-title>
+        <f7-nav-title
+          >{{ ticker.symbol }}:
+          {{ ticker.price.length && ticker.price.split(".")[0] }}</f7-nav-title
+        >
         <f7-nav-right>
           <f7-button
             small
@@ -32,7 +35,7 @@
             <f7-button
               small
               class="panel-close float-left"
-              icon-f7="close"
+              icon-f7="chevron_left"
               href="#"
             ></f7-button>
             <p class="block-title">Trades History</p>
@@ -63,7 +66,7 @@
         </div>
       </div>
 
-      <f7-block>
+      <f7-block v-if="showCandles">
         <VueTradingView :options="options" />
       </f7-block>
 
@@ -87,6 +90,9 @@
           {{ position && parseFloat(position[0].notional).toFixed(2) }} | PnL:
           USDT
           {{ parseFloat(position && position[0].unRealizedProfit).toFixed(4) }}
+          <br />ENTRY: {{ position && position[0].entryPrice.split(".")[0] }} |
+          LIQIDATION:
+          {{ position && position[0].liquidationPrice.split(".")[0] }}
         </p>
       </f7-block>
       <f7-block>
@@ -136,7 +142,10 @@
           :value="amount"
           @range:change="onAmountChange"
         />
-        <p>AMOUNT: {{ amount }} % of DEPOSIT</p>
+        <p>
+          AMOUNT: {{ amount }} % of DEPOSIT
+          <span>({{ (usdtbalance / 100) * amount }} USDT)</span>
+        </p>
         <f7-range
           :min="0"
           :max="125"
@@ -170,6 +179,7 @@ import { mapValues, omit, groupBy } from "lodash";
 import VueTradingView from "vue-trading-view/src/vue-trading-view";
 
 var client = null;
+var client0 = null;
 
 export default {
   // props: {
@@ -178,7 +188,11 @@ export default {
   components: {
     VueTradingView,
   },
-
+  head() {
+    return {
+      title: this.ticker.length && this.ticker["BTCUSDT"].split(".")[0],
+    };
+  },
   data() {
     return {
       options: {
@@ -191,10 +205,14 @@ export default {
         hide_legend: true,
         timezone: "Etc/UTC",
       },
+      showCandles: false,
       processing: false,
       amount: 5,
       leverage: 10,
-      ticker: "",
+      ticker: {
+        symbol: "",
+        price: "",
+      },
       online: false,
       balance: "",
       usdtbalance: "",
@@ -203,10 +221,21 @@ export default {
       trades: null,
       currentOrder: null,
       candles: [],
-      checkInt: null,
+      checkPosInt: null,
+      checkPriceInt: null,
+      INTERVAL: 10000,
     };
   },
   methods: {
+    async getPrice() {
+      let tmp = await client0.prices({ symbol: "BTCUSDT" });
+      this.ticker = {
+        symbol: Object.keys(tmp)[0],
+        price: Object.values(tmp)[0],
+      };
+
+      console.log(this.ticker);
+    },
     // async getCandles() {
     //   let candles = await client.futuresCandles({
     //     symbol: "BTCUSDT",
@@ -229,6 +258,25 @@ export default {
         this.position = position;
         if (position && position[0].unRealizedProfit != 0) {
           this.processing = false;
+          /////STOP price fetching for header and use position mark price instead
+          console.log("interval", this.checkPriceInt);
+          clearInterval(this.checkPriceInt);
+          if (!this.checkPosInt) {
+            this.checkPosInt = setInterval(
+              this.checkPosition.bind(this),
+              this.INTERVAL
+            );
+          }
+          this.ticker.price = this.position[0].markPrice;
+          this.ticker.symbol = this.position[0].symbol;
+        } else {
+          clearInterval(this.checkPosInt);
+          if (!this.checkPriceInt) {
+            this.checkPriceInt = setInterval(
+              this.getPrice.bind(this),
+              this.INTERVAL
+            );
+          }
         }
       }
     },
@@ -274,7 +322,7 @@ export default {
         let trades = await client.futuresUserTrades({
           symbol: "BTCUSDT",
         });
-  
+
         //grouping by order id
         var grouped = await _.mapValues(_.groupBy(trades, "orderId"), (clist) =>
           clist.map((trade) => _.omit(trade, "make"))
@@ -305,13 +353,13 @@ export default {
           });
           this.currentOrder = order;
           //console.log(order);
-          this.checkInt = setInterval(this.checkPosition.bind(this), 3000);
-  
+          this.checkPosition();
+
           //this.checkPosition();
-      }else {
-        alert("Check leverage");
+        } else {
+          alert("Check leverage");
+        }
       }
-      } 
     },
 
     async exit() {
@@ -319,7 +367,6 @@ export default {
         alert("API keys are not set in the Settings");
         return;
       } else {
-
         this.processing = true;
         this.position = await client.futuresPositionRisk({
           symbol: "BTCUSDT",
@@ -335,22 +382,36 @@ export default {
         });
         //console.log(closeOrder);
         this.currentOrder = null;
-        clearInterval(this.checkInt);
-  
+        //clearInterval(this.checkPosInt);
+        this.checkPriceInt = setInterval(
+          this.getPrice.bind(this),
+          this.INTERVAL
+        );
         await this.getBalance();
         await this.checkPosition();
         this.processing = false;
       }
     },
+    pageAfterInHandler() {
+      this.showCandles = this.$store.state.showCandles;
+    },
   },
 
+  created() {
+    this.showCandles = this.$store.state.showCandles;
+  },
+  beforeDestroy() {
+    console.log("beforedestroy");
+    clearInterval(this.checkPriceInt);
+    clearInterval(this.checkPosInt);
+  },
   mounted: async function () {
-    this.amount = this.$store.state.amount;
-    this.leverage = this.$store.state.leverage;
-
     client = Binance({
       apiKey: this.$store.state.key,
       apiSecret: this.$store.state.secret,
+      //getTime: xxx, // time generator function, optional, defaults to () => Date.now()
+    });
+    client0 = Binance({
       //getTime: xxx, // time generator function, optional, defaults to () => Date.now()
     });
 
@@ -371,15 +432,15 @@ export default {
 
     this.getBalance();
 
-    if (process.client) {
-      client.ws.trades("BTCUSDT", (trade) => {
-        //console.log(trade);
-        this.ticker = parseFloat(trade.price).toFixed(4);
-      });
-      // client.ws.candles("BTCUSDT", "5m", (msg) => {
-      //   console.log(msg);
-      // });
-    }
+    // if (process.client) {
+    //   client.ws.trades("BTCUSDT", (trade) => {
+    //     //console.log(trade);
+    //     this.ticker = parseFloat(trade.price).toFixed(4);
+    //   });
+    //   // client.ws.candles("BTCUSDT", "5m", (msg) => {
+    //   //   console.log(msg);
+    //   // });
+    // }
   },
 };
 </script>
