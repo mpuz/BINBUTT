@@ -188,11 +188,7 @@ export default {
   components: {
     VueTradingView,
   },
-  head() {
-    return {
-      title: this.ticker.length && this.ticker["BTCUSDT"].split(".")[0],
-    };
-  },
+
   data() {
     return {
       options: {
@@ -224,6 +220,11 @@ export default {
       checkPosInt: null,
       checkPriceInt: null,
       INTERVAL: 10000,
+    };
+  },
+  head() {
+    return {
+      title: this.ticker.price && this.ticker.price.split(".")[0],
     };
   },
   methods: {
