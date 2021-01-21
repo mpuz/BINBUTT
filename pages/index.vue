@@ -1,6 +1,6 @@
 <template>
   <no-ssr>
-    <f7-page class="noscroll" @page:beforein="pageAfterInHandler">
+    <f7-page class="noscroll" @page:afterin="pageAfterInHandler">
       <f7-navbar class="noscroll">
         <f7-nav-left>
           <f7-button
@@ -67,7 +67,7 @@
       </div>
 
       <f7-block v-if="showCandles">
-        <VueTradingView :options="options" />
+        <VueTradingView :options="options" :key="refreshkey" />
       </f7-block>
 
       <f7-block>
@@ -195,20 +195,21 @@ export default {
         autosize: true,
         symbol: "BINANCE:BTCPERP",
         theme: "light",
-        interval: "5",
+        interval: "60",
         style: "1",
         hide_top_toolbar: true,
         hide_legend: true,
         timezone: "Etc/UTC",
       },
-      showCandles: false,
-      processing: false,
-      amount: 5,
-      leverage: 10,
       ticker: {
         symbol: "",
         price: "",
       },
+      refreshkey: 0,
+      showCandles: false,
+      processing: false,
+      amount: 5,
+      leverage: 10,
       online: false,
       balance: "",
       usdtbalance: "",
@@ -235,7 +236,7 @@ export default {
         price: Object.values(tmp)[0],
       };
 
-      console.log(this.ticker);
+      //console.log(this.ticker);
     },
     // async getCandles() {
     //   let candles = await client.futuresCandles({
@@ -260,7 +261,6 @@ export default {
         if (position && position[0].unRealizedProfit != 0) {
           this.processing = false;
           /////STOP price fetching for header and use position mark price instead
-          console.log("interval", this.checkPriceInt);
           clearInterval(this.checkPriceInt);
           if (!this.checkPosInt) {
             this.checkPosInt = setInterval(
@@ -394,7 +394,12 @@ export default {
       }
     },
     pageAfterInHandler() {
-      this.showCandles = this.$store.state.showCandles;
+      this.options.interval = this.$store.state.interval;
+      this.refreshkey += 1;
+      console.log("setting interval candle", this.options.interval);
+      this.$nextTick(() => {
+        this.showCandles = this.$store.state.showCandles;
+      });
     },
   },
 
@@ -410,11 +415,11 @@ export default {
     client = Binance({
       apiKey: this.$store.state.key,
       apiSecret: this.$store.state.secret,
-      //getTime: xxx, // time generator function, optional, defaults to () => Date.now()
     });
-    client0 = Binance({
-      //getTime: xxx, // time generator function, optional, defaults to () => Date.now()
-    });
+    client0 = Binance({});
+
+    //this.options.interval =
+    console.log(this.$store.state.interval);
 
     //set isolated margin
     // await client.futuresMarginType({
@@ -425,11 +430,7 @@ export default {
     //get user's orders history
     this.getHistory();
 
-    //get position state
-
     this.checkPosition();
-
-    //get balance
 
     this.getBalance();
 

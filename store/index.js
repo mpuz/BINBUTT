@@ -5,7 +5,8 @@ export const state = () => ({
     secret: '',
     amount: 5,
     leverage: 10,
-    interval: '5'
+    interval: "5",
+    showCandles: true,
 })
 
 export const mutations = {
@@ -44,5 +45,6 @@ export const mutations = {
         if (process.client) {
             localStorage.setItem('showCandles', value)
         }
-    }
+    },
+
 }

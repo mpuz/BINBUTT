@@ -1,6 +1,10 @@
 <template>
   <f7-page>
-    <f7-navbar title="Settings" back-link="Back"></f7-navbar>
+    <f7-navbar
+      title="Settings"
+      back-link="Back"
+      @click:back="changeCandles"
+    ></f7-navbar>
     <f7-block-title>Enter your API keys</f7-block-title>
     <f7-block strong>
       <div class="item-title item-label">API Key</div>
@@ -19,7 +23,10 @@
       <f7-list>
         <f7-list-item>
           <span>Show candles</span>
-          <f7-toggle :checked="showCandles" @change="changeSwitch"></f7-toggle>
+          <f7-toggle
+            :checked="showCandles"
+            @pageReinit="changeSwitch"
+          ></f7-toggle>
         </f7-list-item>
         <f7-list-item
           v-if="showCandles"
@@ -27,14 +34,17 @@
           title="Tradingview interval"
           smart-select
           :smart-select-params="{ closeOnSelect: true }"
-          ref="ss1"
         >
-          <select name="Candle Intervals">
+          <select
+            name="Candle Intervals"
+            @smartselect:close="console.log('closed')"
+          >
             <option
               v-for="(word, index) in wordsList"
               :value="word.value"
               :ref="'ss' + index"
               v-bind:key="index"
+              :selected="word.selected"
             >
               {{ word.text }}
             </option>
@@ -57,18 +67,17 @@ export default {
       interval: "",
       showCandles: true,
       wordsList: [
-        { value: "3", text: "3m" },
-        { value: "5", text: "5m" },
-        { value: "10", text: "10m" },
-        { value: "15", text: "15m" },
-        { value: "30", text: "30m" },
-        { value: "1H", text: "1H" },
-        { value: "2H", text: "2H" },
-        { value: "3H", text: "3H" },
-        { value: "6H", text: "6H" },
-        { value: "12H", text: "12H" },
-        { value: "1D", text: "1D" },
-        { value: "1HW", text: "1W" },
+        { value: "3", text: "3", selected: false },
+        { value: "5", text: "5", selected: false },
+        { value: "10", text: "10", selected: false },
+        { value: "15", text: "15", selected: false },
+        { value: "30", text: "30", selected: true },
+        { value: "60", text: "60", selected: false },
+        { value: "120", text: "120", selected: false },
+        { value: "240", text: "240", selected: false },
+        { value: "480", text: "480", selected: false },
+        { value: "1D", text: "1D", selected: false },
+        { value: "1W", text: "1W", selected: false },
       ],
     };
   },
@@ -77,6 +86,13 @@ export default {
       //onsole.log(this)
       this.showCandles = obj.target.checked;
       this.$store.commit("showCandles", this.showCandles);
+    },
+    async changeCandles() {
+      this.interval = await this.$el.querySelector(
+        ".my-smart-select .smart-select div.item-content div.item-inner div.item-after"
+      ).innerText;
+      this.$store.commit("setInterval", this.interval);
+      console.log("store set to", this.$store.state.interval);
     },
   },
   watch: {
@@ -87,13 +103,23 @@ export default {
       this.$store.commit("setSecret", this.secret);
     },
   },
-  mounted: async function () {
+  created: function () {
     this.showCandles = this.$store.state.showCandles;
     this.key = this.$store.state.key;
     this.secret = this.$store.state.secret;
-    this.interval = this.$el.querySelector(".item-after").innerText;
-    //this.interval = this.$refs["ss1"].lastChild.value;
-    console.log(this.interval);
+    this.interval = this.$store.state.interval;
+
+    let prev = this.wordsList.map((x) => x.selected).indexOf(true);
+    console.log(prev);
+    this.wordsList[prev].selected = false;
+
+    let curr = this.wordsList.map((x) => x.text).indexOf(this.interval);
+    this.wordsList[curr].selected = true;
+  },
+  mounted: async function () {
+    this.interval = await this.$el.querySelector(
+      ".my-smart-select .smart-select div.item-content div.item-inner div.item-after"
+    ).innerText;
   },
 };
 </script>
