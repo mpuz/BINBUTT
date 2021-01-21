@@ -256,7 +256,7 @@ export default {
         let position = await client.futuresPositionRisk({
           symbol: "BTCUSDT",
         });
-        console.log("position", position);
+        //console.log("position", position);
         this.position = position;
         if (position && position[0].unRealizedProfit != 0) {
           this.processing = false;

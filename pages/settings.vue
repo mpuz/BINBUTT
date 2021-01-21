@@ -54,7 +54,9 @@
     </f7-block>
     <f7-block-title>Support development</f7-block-title>
 
-    <f7-block>ERC-20: 0xb3Aeb01549B07FA0C5bDFc85f367B1f0Ca224c70 </f7-block>
+    <f7-block
+      >ERC-20: <a @click="doCopy" href="#">{{ address }}</a>
+    </f7-block>
   </f7-page>
 </template>
 
@@ -62,6 +64,7 @@
 export default {
   data() {
     return {
+      address: "0xb3Aeb01549B07FA0C5bDFc85f367B1f0Ca224c70",
       key: "",
       secret: "",
       interval: "",
@@ -94,6 +97,29 @@ export default {
       this.$store.commit("setInterval", this.interval);
       console.log("store set to", this.$store.state.interval);
     },
+    doCopy: function () {
+      this.$copyText(this.address).then(
+        function (e) {
+          alert("Copied");
+          console.log(e);
+        },
+        function (e) {
+          alert("Can not copy");
+          console.log(e);
+        }
+      );
+    },
+    showToastBottom: () => {
+      // Create toast
+      if (!toastBottom) {
+        toastBottom = this.$f7.toast.create({
+          text: "This is default bottom positioned toast",
+          closeTimeout: 2000,
+        });
+      }
+      // Open it
+      toastBottom.open();
+    },
   },
   watch: {
     key() {
@@ -120,6 +146,7 @@ export default {
     this.interval = await this.$el.querySelector(
       ".my-smart-select .smart-select div.item-content div.item-inner div.item-after"
     ).innerText;
+    console.log(window);
   },
 };
 </script>

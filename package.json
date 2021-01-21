@@ -13,6 +13,7 @@
     "@nuxtjs/pwa": "latest",
     "binance-api-node": "git+https://github.com/Ashlar/binance-api-node.git",
     "nuxt": "latest",
+    "nuxt-clipboard2": "^0.2.1",
     "nuxt7": "^4.2.0",
     "vue-trading-view": "^1.0.1",
     "vuex": "^3.6.0"

@@ -29,6 +29,8 @@ module.exports = {
   modules: [
     'nuxt7',
     '@nuxtjs/pwa',
+    'nuxt-clipboard2',
+
     // ['nuxt-twa-module', {
     //   defaultUrl: 'https://your-url.com',
     //   hostName: 'your-url.com',
