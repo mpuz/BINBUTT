@@ -11,14 +11,17 @@
             data-panel="#panel-nested"
           ></f7-button>
         </f7-nav-left>
-        <f7-nav-title
-          >{{ ticker.symbol }}:
-          {{ ticker.price.length && ticker.price.split(".")[0] }}</f7-nav-title
-        >
+        <f7-nav-title>
+          <span v-if="ticker.price.length"
+            >{{ ticker.symbol + " : " }}
+            {{ ticker.price.length && ticker.price.split(".")[0] }}</span
+          >
+          <f7-preloader v-if="!ticker.price.length" color="white" />
+        </f7-nav-title>
         <f7-nav-right>
           <f7-button
             small
-            class="display-flex"
+            class="link display-flex"
             icon-f7="gear_alt"
             href="/settings/"
           ></f7-button>
@@ -66,100 +69,107 @@
         </div>
       </div>
 
-      <f7-block v-if="showCandles">
-        <VueTradingView :options="options" :key="refreshkey" />
-      </f7-block>
+      <f7-row class="align-items-stretch" style="height: 100%">
+        <f7-col width="100" medium="60" v-if="showCandles">
+          <!-- <f7-block> -->
+          <VueTradingView :options="options" :key="refreshkey" />
+          <!-- </f7-block> -->
+        </f7-col>
+        <f7-col width="100" medium="40">
+          <f7-block>
+            <p>
+              Status:
+              <span v-bind:style="{ color: online ? 'green' : 'red' }">{{
+                online ? "ONLINE" : "OFFLINE"
+              }}</span>
+              <span> | {{ usdtbalance }} USDT | {{ bnbbalance }} BNB</span>
+            </p>
 
-      <f7-block>
-        <p>
-          Status:
-          <span v-bind:style="{ color: online ? 'green' : 'red' }">{{
-            online ? "ONLINE" : "OFFLINE"
-          }}</span>
-          <span> | {{ usdtbalance }} USDT | {{ bnbbalance }} BNB</span>
-        </p>
+            <p>
+              {{
+                position && position[0].positionAmt > 0
+                  ? "LONG: USDT "
+                  : position && position[0].positionAmt < 0
+                  ? "SHORT: USDT "
+                  : "NO POSITIONS: "
+              }}
+              {{ position && parseFloat(position[0].notional).toFixed(2) }} |
+              PnL: USDT
+              {{
+                parseFloat(position && position[0].unRealizedProfit).toFixed(4)
+              }}
+              <br />ENTRY:
+              {{ position && position[0].entryPrice.split(".")[0] }} |
+              LIQIDATION:
+              {{ position && position[0].liquidationPrice.split(".")[0] }}
+            </p>
+          </f7-block>
+          <f7-block>
+            <f7-row>
+              <f7-col>
+                <f7-button
+                  large
+                  fill
+                  color="green"
+                  @click="order('BUY')"
+                  :disabled="processing"
+                  >LONG</f7-button
+                >
+              </f7-col>
+              <f7-col>
+                <f7-button
+                  large
+                  fill
+                  color="blue"
+                  @click="exit()"
+                  :disabled="processing"
+                  >EXIT</f7-button
+                >
+              </f7-col>
+              <f7-col>
+                <f7-button
+                  large
+                  fill
+                  color="red"
+                  @click="order('SELL')"
+                  :disabled="processing"
+                  >SHORT</f7-button
+                >
+              </f7-col>
+            </f7-row>
+          </f7-block>
 
-        <p>
-          {{
-            position && position[0].positionAmt > 0
-              ? "LONG: USDT "
-              : position && position[0].positionAmt < 0
-              ? "SHORT: USDT "
-              : "NO POSITIONS: "
-          }}
-          {{ position && parseFloat(position[0].notional).toFixed(2) }} | PnL:
-          USDT
-          {{ parseFloat(position && position[0].unRealizedProfit).toFixed(4) }}
-          <br />ENTRY: {{ position && position[0].entryPrice.split(".")[0] }} |
-          LIQIDATION:
-          {{ position && position[0].liquidationPrice.split(".")[0] }}
-        </p>
-      </f7-block>
-      <f7-block>
-        <f7-row>
-          <f7-col>
-            <f7-button
-              large
-              fill
-              color="green"
-              @click="order('BUY')"
-              :disabled="processing"
-              >LONG</f7-button
-            >
-          </f7-col>
-          <f7-col>
-            <f7-button
-              large
-              fill
-              color="blue"
-              @click="exit()"
-              :disabled="processing"
-              >EXIT</f7-button
-            >
-          </f7-col>
-          <f7-col>
-            <f7-button
-              large
-              fill
-              color="red"
-              @click="order('SELL')"
-              :disabled="processing"
-              >SHORT</f7-button
-            >
-          </f7-col>
-        </f7-row>
-      </f7-block>
-
-      <f7-block strong>
-        <f7-range
-          :min="0"
-          :max="100"
-          :label="true"
-          :step="1"
-          :scale="true"
-          :scale-steps="5"
-          :scale-sub-steps="4"
-          :value="amount"
-          @range:change="onAmountChange"
-        />
-        <p>
-          AMOUNT: {{ amount }} % of DEPOSIT
-          <span>({{ (usdtbalance / 100) * amount }} USDT)</span>
-        </p>
-        <f7-range
-          :min="0"
-          :max="125"
-          :label="true"
-          :step="5"
-          :value="leverage"
-          :scale="true"
-          :scale-steps="5"
-          :scale-sub-steps="5"
-          @range:change="onMarginChange"
-        />
-        <p>LEVERAGE: {{ leverage }}X</p>
-      </f7-block>
-
+          <f7-block strong>
+            <f7-range
+              :min="0"
+              :max="100"
+              :label="true"
+              :step="1"
+              :scale="true"
+              :scale-steps="5"
+              :scale-sub-steps="4"
+              :value="amount"
+              @range:change="onAmountChange"
+            />
+            <p>
+              AMOUNT: {{ amount }} % of DEPOSIT
+              <span>({{ (usdtbalance / 100) * amount }} USDT)</span>
+            </p>
+            <f7-range
+              :min="0"
+              :max="125"
+              :label="true"
+              :step="5"
+              :value="leverage"
+              :scale="true"
+              :scale-steps="5"
+              :scale-sub-steps="5"
+              @range:change="onMarginChange"
+            />
+            <p>LEVERAGE: {{ leverage }}X</p>
+          </f7-block>
+        </f7-col>
+      </f7-row>
       <!-- <f7-block strong>
       <f7-segmented tag="p" raised>
         <f7-button @click="() => (gaugeValue = 0)">0%</f7-button>
@@ -197,7 +207,7 @@ export default {
         theme: "light",
         interval: "60",
         style: "1",
-        hide_top_toolbar: true,
+        hide_top_toolbar: false,
         hide_legend: true,
         timezone: "Etc/UTC",
       },
@@ -206,7 +216,7 @@ export default {
         price: "",
       },
       refreshkey: 0,
-      showCandles: false,
+      showCandles: true,
       processing: false,
       amount: 5,
       leverage: 10,
@@ -305,7 +315,7 @@ export default {
         return;
       } else {
         this.balance = await client.futuresAccountBalance();
-        console.log(this.balance);
+        //console.log(this.balance);
         if (this.balance[0].balance) {
           this.usdtbalance = parseFloat(this.balance[0].balance).toFixed(0);
           this.bnbbalance = parseFloat(this.balance[1].balance).toFixed(2);
@@ -394,17 +404,17 @@ export default {
       }
     },
     pageAfterInHandler() {
-      this.options.interval = this.$store.state.interval;
-      this.refreshkey += 1;
-      console.log("setting interval candle", this.options.interval);
-      this.$nextTick(() => {
-        this.showCandles = this.$store.state.showCandles;
-      });
+      //this.options.interval = this.$store.state.interval;
+      //this.refreshkey += 1;
+      //console.log("setting interval candle", this.options.interval);
+      // this.$nextTick(() => {
+      //   this.showCandles = this.$store.state.showCandles;
+      // });
     },
   },
 
   created() {
-    this.showCandles = this.$store.state.showCandles;
+    //this.showCandles = this.$store.state.showCandles;
   },
   beforeDestroy() {
     console.log("beforedestroy");
@@ -418,8 +428,10 @@ export default {
     });
     client0 = Binance({});
 
-    //this.options.interval =
-    console.log(this.$store.state.interval);
+    //console.log(this.$nuxt.$f7);
+    //console.log(this.$store.state.interval);
+
+    //TODO - check and set margin type
 
     //set isolated margin
     // await client.futuresMarginType({
@@ -428,6 +440,8 @@ export default {
     // });
 
     //get user's orders history
+    this.getPrice();
+
     this.getHistory();
 
     this.checkPosition();
@@ -450,5 +464,12 @@ export default {
 .noscroll {
   overscroll-behavior: contain !important;
   position: fixed !important;
+}
+#vue-trading-view {
+  width: 100% !important;
+  height: 100% !important;
+}
+row {
+  height: 100% !important;
 }
 </style>

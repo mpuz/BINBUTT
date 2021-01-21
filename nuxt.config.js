@@ -1,5 +1,7 @@
 module.exports = {
-
+  env: {
+    ver: require('./package.json').version,
+  },
   server: {
     host: '0'
   },

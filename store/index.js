@@ -5,8 +5,8 @@ export const state = () => ({
     secret: '',
     amount: 5,
     leverage: 10,
-    interval: "5",
-    showCandles: true,
+    //interval: "5",
+    //showCandles: true,
 })
 
 export const mutations = {
@@ -34,17 +34,17 @@ export const mutations = {
             localStorage.setItem('leverage', value)
         }
     },
-    setInterval(state, value) {
-        state.interval = value
-        if (process.client) {
-            localStorage.setItem('interval', value)
-        }
-    },
-    showCandles(state, value) {
-        state.showCandles = value
-        if (process.client) {
-            localStorage.setItem('showCandles', value)
-        }
-    },
+    // setInterval(state, value) {
+    //     state.interval = value
+    //     if (process.client) {
+    //         localStorage.setItem('interval', value)
+    //     }
+    // },
+    // showCandles(state, value) {
+    //     state.showCandles = value
+    //     if (process.client) {
+    //         localStorage.setItem('showCandles', value)
+    //     }
+    // },
 
 }

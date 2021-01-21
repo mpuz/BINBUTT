@@ -3,6 +3,7 @@ Working sample is at https://beatcoin.io
 To trade you need to enter API keys at settings. Orders are placed as market. 
 
 <img src="https://github.com/mpuz/BINBUTT/raw/master/beatcoin.io.png" alt="UI" width="300"/>
+<img src="https://github.com/mpuz/BINBUTT/raw/master/beatcoin.io_desk.png" alt="UI" width="1093"/>
 
 With only three buttons and couple of settings. Made for easy and fast entering to and exiting from position without mobile Binance app. Uses API keys generated at Binance.com.. Keys are used locally on your device. 
 
@@ -38,16 +39,4 @@ otherwise websocket connection will not work. -->
 
 > 
 
-## Development
 
-``` bash
-# Install dependencies
-yarn add binance-buttons
-
-# Serve with hot-reload at localhost:3000
-yarn run dev
-
-
-# Generate static project
-yarn run generate
-```
