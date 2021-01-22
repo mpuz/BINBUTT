@@ -1,6 +1,7 @@
 module.exports = {
   env: {
     ver: require('./package.json').version,
+    goo: process.env.GOOGLE_ANALYTICS_ID
   },
   server: {
     host: '0'

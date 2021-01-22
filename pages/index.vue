@@ -40,7 +40,7 @@
               <f7-button
                 small
                 class="panel-close float-right"
-                icon-f7="multiply"
+                icon-f7="xmark"
               ></f7-button>
             </f7-block-title>
 
@@ -361,7 +361,7 @@ export default {
             type: "MARKET",
             quantity: (
               ((this.usdtbalance / 100) * this.amount) /
-              this.ticker
+              parseFloat(this.ticker.price)
             ).toFixed(3),
           });
           this.currentOrder = order;
@@ -414,7 +414,7 @@ export default {
       // });
     },
   },
-
+  watch: {},
   created() {
     //this.showCandles = this.$store.state.showCandles;
   },
@@ -441,7 +441,8 @@ export default {
     //   marginType: "ISOLATED",
     // });
 
-    //get user's orders history
+    console.log("Google Analiticus ID:", process.env.goo);
+
     this.getPrice();
 
     this.getHistory();
