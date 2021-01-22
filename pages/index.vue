@@ -35,13 +35,15 @@
       >
         <div class="page">
           <div class="page-content">
-            <f7-button
-              small
-              class="panel-close float-left"
-              icon-f7="chevron_left"
-              href="#"
-            ></f7-button>
-            <p class="block-title">Trades History</p>
+            <f7-block-title
+              >Trades History
+              <f7-button
+                small
+                class="panel-close float-right"
+                icon-f7="multiply"
+              ></f7-button>
+            </f7-block-title>
+
             <div class="list simple-list">
               <ul>
                 <li v-for="trade in trades" v-bind:key="trade[0]">
@@ -240,10 +242,10 @@ export default {
   },
   methods: {
     async getPrice() {
-      let tmp = await client0.prices({ symbol: "BTCUSDT" });
+      let tmp = await client0.futuresMarkPrice({ symbol: "BTCUSDT" });
       this.ticker = {
-        symbol: Object.keys(tmp)[0],
-        price: Object.values(tmp)[0],
+        symbol: tmp.symbol,
+        price: tmp.markPrice,
       };
 
       //console.log(this.ticker);
