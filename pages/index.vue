@@ -346,7 +346,7 @@ export default {
     },
 
     async order(side) {
-      if (!this.$store.state.key && !this.$store.state.secret) {
+      if (!this.$store.state.key || !this.$store.state.secret) {
         alert("API keys are not set in the Settings");
         return;
       } else {
