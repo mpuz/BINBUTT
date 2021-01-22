@@ -428,6 +428,7 @@ export default {
     });
     client0 = Binance({});
 
+    console.log(process.env.id);
     //console.log(this.$nuxt.$f7);
     //console.log(this.$store.state.interval);
 

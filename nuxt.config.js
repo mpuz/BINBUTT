@@ -21,7 +21,7 @@ module.exports = {
       { name: "HandheldFriendly", content: "true" },
       { hid: "description", name: "description", content: "Binance Futures API Trader" }
     ],
-    //link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
+    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
   },
   plugins: [
     // .client will only be run client side on initial app load
@@ -83,7 +83,17 @@ module.exports = {
     // ...
     // }
   },
-
+  buildModules: [
+    '@nuxtjs/google-analytics'
+  ],
+  googleAnalytics: {
+    id: process.env.GOOGLE_ANALYTICS_ID, // Use as fallback if no runtime config is provided
+  },
+  publicRuntimeConfig: {
+    googleAnalytics: {
+      id: process.env.GOOGLE_ANALYTICS_ID
+    }
+  },
   // Additional CSS configuration
   css: [
     'assets/app.css'

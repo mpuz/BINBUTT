@@ -17,5 +17,8 @@
     "nuxt7": "^4.2.0",
     "vue-trading-view": "^1.0.1",
     "vuex": "^3.6.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/google-analytics": "^2.4.0"
   }
 }
