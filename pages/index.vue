@@ -1,7 +1,7 @@
 <template>
   <no-ssr>
     <f7-page class="noscroll" @page:afterin="pageAfterInHandler">
-      <f7-navbar class="noscroll">
+      <f7-navbar class="navbar noscroll">
         <f7-nav-left>
           <f7-button
             small

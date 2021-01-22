@@ -69,7 +69,7 @@ module.exports = {
   // Framework7 Config
   framework7: {
     app: {
-      theme: 'auto'
+      theme: 'md'
     }
 
   },
