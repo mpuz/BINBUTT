@@ -418,7 +418,7 @@ export default {
     pageAfterInHandler() {
       //this.options.interval = this.$store.state.interval;
       this.$nextTick(() => {
-        console.log(this.$store.state.darkTheme);
+        //console.log(this.$store.state.darkTheme);
         this.refreshkey += 1;
       });
       //console.log("setting interval candle", this.options.interval);
@@ -443,7 +443,7 @@ export default {
     });
     client0 = Binance({});
 
-    console.log(this.$nuxt.$f7);
+    //console.log(this.$nuxt.$f7);
     //console.log(this.$store.state.interval);
 
     //TODO - check and set margin type

@@ -93,13 +93,13 @@ module.exports = {
     '@nuxtjs/google-analytics'
   ],
   googleAnalytics: {
-    id: process.env.GOOGLE_ANALYTICS_ID, // Use as fallback if no runtime config is provided
+    id: "UA-126827900-1", // Use as fallback if no runtime config is provided
   },
-  publicRuntimeConfig: {
-    googleAnalytics: {
-      id: process.env.GOOGLE_ANALYTICS_ID
-    }
-  },
+  // publicRuntimeConfig: {
+  //   googleAnalytics: {
+  //     id: process.env.GOOGLE_ANALYTICS_ID
+  //   }
+  // },
   // Additional CSS configuration
   css: [
     'assets/app.css'
