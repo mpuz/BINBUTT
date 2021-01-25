@@ -5,6 +5,7 @@ export const state = () => ({
     secret: '',
     amount: 5,
     leverage: 10,
+    darkTheme: false,
     //interval: "5",
     //showCandles: true,
 })
@@ -32,6 +33,12 @@ export const mutations = {
         state.leverage = value
         if (process.client) {
             localStorage.setItem('leverage', value)
+        }
+    },
+    darkTheme(state, value) {
+        state.darkTheme = value
+        if (process.client) {
+            localStorage.setItem('darkTheme', value)
         }
     },
     // setInterval(state, value) {

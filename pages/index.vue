@@ -1,6 +1,10 @@
 <template>
   <no-ssr>
-    <f7-page class="noscroll" @page:afterin="pageAfterInHandler">
+    <f7-page
+      class="noscroll"
+      @page:afterin="pageAfterInHandler"
+      v-bind:class="{ 'theme-dark': $store.state.darkTheme }"
+    >
       <f7-navbar class="navbar noscroll">
         <f7-nav-left>
           <f7-button
@@ -74,7 +78,7 @@
       <f7-row class="align-items-stretch" style="height: 100%">
         <f7-col width="100" medium="60" v-if="showCandles">
           <!-- <f7-block> -->
-          <VueTradingView :options="options" :key="refreshkey" />
+          <VueTradingView :options="themed" :key="refreshkey" />
           <!-- </f7-block> -->
         </f7-col>
         <f7-col width="100" medium="40">
@@ -234,6 +238,12 @@ export default {
       checkPriceInt: null,
       INTERVAL: 10000,
     };
+  },
+  computed: {
+    themed: function () {
+      this.options.theme = this.$store.state.darkTheme ? "dark" : "light";
+      return this.options;
+    },
   },
   head() {
     return {
@@ -407,7 +417,10 @@ export default {
     },
     pageAfterInHandler() {
       //this.options.interval = this.$store.state.interval;
-      //this.refreshkey += 1;
+      this.$nextTick(() => {
+        console.log(this.$store.state.darkTheme);
+        this.refreshkey += 1;
+      });
       //console.log("setting interval candle", this.options.interval);
       // this.$nextTick(() => {
       //   this.showCandles = this.$store.state.showCandles;
@@ -430,7 +443,7 @@ export default {
     });
     client0 = Binance({});
 
-    //console.log(this.$nuxt.$f7);
+    console.log(this.$nuxt.$f7);
     //console.log(this.$store.state.interval);
 
     //TODO - check and set margin type
@@ -441,7 +454,7 @@ export default {
     //   marginType: "ISOLATED",
     // });
 
-    console.log("Google Analiticus ID:", process.env.goo);
+    //console.log("Google Analiticus ID:", process.env.goo);
 
     this.getPrice();
 

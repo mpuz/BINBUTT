@@ -69,7 +69,9 @@ module.exports = {
   // Framework7 Config
   framework7: {
     app: {
-      theme: 'md'
+      theme: 'md',
+      autoDarkTheme: false,
+      // darkTheme: true
     }
 
   },
@@ -84,6 +86,9 @@ module.exports = {
     // ...
     // }
   },
+
+
+
   buildModules: [
     '@nuxtjs/google-analytics'
   ],

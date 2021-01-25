@@ -1,5 +1,5 @@
 <template>
-  <f7-page>
+  <f7-page v-bind:class="{ 'theme-dark': darkTheme }">
     <f7-navbar
       title="Settings"
       back-link="Back"
@@ -19,9 +19,17 @@
       </div>
     </f7-block>
 
-    <!-- <f7-block>
+    <f7-block>
       <f7-list>
         <f7-list-item>
+          <span>Dark Theme</span>
+          <f7-toggle
+            :checked="darkTheme"
+            @toggle:change="toggleTheme"
+            ref="themetoggler"
+          ></f7-toggle>
+        </f7-list-item>
+        <!-- <f7-list-item>
           <span>Show candles</span>
           <f7-toggle :checked="showCandles" @change="changeSwitch"></f7-toggle>
         </f7-list-item>
@@ -46,9 +54,9 @@
               {{ word.text }}
             </option>
           </select>
-        </f7-list-item>
+        </f7-list-item> -->
       </f7-list>
-    </f7-block> -->
+    </f7-block>
     <f7-block>
       Binance Buttons ver. {{ version }}<br />
       <a
@@ -77,6 +85,7 @@
 export default {
   data() {
     return {
+      darkTheme: true,
       erc20: "0xb3Aeb01549B07FA0C5bDFc85f367B1f0Ca224c70",
       bitcoin: "39WvJg2rKgBXBZ6FZuv8QKXQNWfDjGe9UK",
       key: "",
@@ -104,6 +113,11 @@ export default {
     },
   },
   methods: {
+    toggleTheme() {
+      this.darkTheme = this.$nuxt.$f7.toggle.get().checked;
+      this.$store.commit("darkTheme", this.darkTheme);
+    },
+
     changeSwitch(obj) {
       //   console.log(this.$nuxt.$f7.toggle.get().checked);
       //   this.showCandles = obj.target.checked;
@@ -145,6 +159,7 @@ export default {
     //this.showCandles = this.$store.state.showCandles;
     this.key = this.$store.state.key;
     this.secret = this.$store.state.secret;
+    this.darkTheme = this.$store.state.darkTheme;
     //this.interval = this.$store.state.interval;
 
     //let prev = this.wordsList.map((x) => x.selected).indexOf(true);
