@@ -6,5 +6,5 @@ export default function ({ store }) {
     store.commit('setMargin', localStorage.getItem('leverage'))
     store.commit('darkTheme', localStorage.getItem('darkTheme') == 'true' ? true : false)
     //store.commit('setInterval', localStorage.getItem('interval'))
-    //store.commit('showCandles', localStorage.getItem('showCandles') == 'true' ? true : false)
+    store.commit('showCandles', localStorage.getItem('showCandles') == 'true' ? true : false)
 }

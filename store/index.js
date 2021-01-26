@@ -7,7 +7,7 @@ export const state = () => ({
     leverage: 10,
     darkTheme: false,
     //interval: "5",
-    //showCandles: true,
+    showCandles: true,
 })
 
 export const mutations = {
@@ -47,11 +47,11 @@ export const mutations = {
     //         localStorage.setItem('interval', value)
     //     }
     // },
-    // showCandles(state, value) {
-    //     state.showCandles = value
-    //     if (process.client) {
-    //         localStorage.setItem('showCandles', value)
-    //     }
-    // },
+    showCandles(state, value) {
+        state.showCandles = value
+        if (process.client) {
+            localStorage.setItem('showCandles', value)
+        }
+    },
 
 }

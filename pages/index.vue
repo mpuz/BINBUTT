@@ -76,9 +76,13 @@
       </div>
 
       <f7-row class="align-items-stretch" style="height: 100%">
-        <f7-col width="100" medium="60" v-if="showCandles">
+        <f7-col width="100" medium="60">
           <!-- <f7-block> -->
-          <VueTradingView :options="themed" :key="refreshkey" />
+          <VueTradingView
+            :options="themed"
+            :key="refreshkey"
+            v-if="$store.state.showCandles"
+          />
           <!-- </f7-block> -->
         </f7-col>
         <f7-col width="100" medium="40">
@@ -99,8 +103,10 @@
                   ? "SHORT: USDT "
                   : "NO POSITIONS: "
               }}
-              {{ position && parseFloat(position[0].notional).toFixed(2) }} |
-              PnL: USDT
+              {{ position && parseFloat(position[0].notional).toFixed(2)
+              }}<span style="color: grey">X</span
+              >{{ position ? position[0].leverage : "" }}
+              | PnL: USDT
               {{
                 parseFloat(position && position[0].unRealizedProfit).toFixed(4)
               }}
@@ -211,7 +217,7 @@ export default {
         autosize: true,
         symbol: "BINANCE:BTCPERP",
         theme: "light",
-        interval: "60",
+        interval: "5",
         style: "1",
         hide_top_toolbar: false,
         hide_legend: true,
@@ -294,6 +300,7 @@ export default {
           this.ticker.symbol = this.position[0].symbol;
         } else {
           clearInterval(this.checkPosInt);
+          this.position = null;
           if (!this.checkPriceInt) {
             this.checkPriceInt = setInterval(
               this.getPrice.bind(this),
@@ -431,12 +438,14 @@ export default {
   created() {
     //this.showCandles = this.$store.state.showCandles;
   },
-  beforeDestroy() {
-    console.log("beforedestroy");
+  destroyed() {
+    //console.log("beforedestroy");
     clearInterval(this.checkPriceInt);
     clearInterval(this.checkPosInt);
   },
   mounted: async function () {
+    this.leverage = this.$store.state.leverage;
+    this.amount = this.$store.state.amount;
     client = Binance({
       apiKey: this.$store.state.key,
       apiSecret: this.$store.state.secret,

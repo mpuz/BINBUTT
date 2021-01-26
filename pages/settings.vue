@@ -23,16 +23,13 @@
       <f7-list>
         <f7-list-item>
           <span>Dark Theme</span>
-          <f7-toggle
-            :checked="darkTheme"
-            @toggle:change="toggleTheme"
-            ref="themetoggler"
-          ></f7-toggle>
+          <f7-toggle :checked="darkTheme" @change="toggleTheme"></f7-toggle>
         </f7-list-item>
-        <!-- <f7-list-item>
+        <f7-list-item>
           <span>Show candles</span>
           <f7-toggle :checked="showCandles" @change="changeSwitch"></f7-toggle>
         </f7-list-item>
+        <!-- 
         <f7-list-item
           v-if="showCandles"
           class="my-smart-select smart-select smart-select-init"
@@ -111,17 +108,20 @@ export default {
     version() {
       return process.env.ver;
     },
+    showCandles() {
+      return this.$store.state.showCandles;
+    },
   },
   methods: {
-    toggleTheme() {
-      this.darkTheme = this.$nuxt.$f7.toggle.get().checked;
+    toggleTheme(obj) {
+      this.darkTheme = obj.target.checked; //this.$nuxt.$f7.toggle.get().checked;
       this.$store.commit("darkTheme", this.darkTheme);
     },
 
     changeSwitch(obj) {
-      //   console.log(this.$nuxt.$f7.toggle.get().checked);
+      console.log(obj.target.checked);
       //   this.showCandles = obj.target.checked;
-      //   this.$store.commit("showCandles", this.showCandles);
+      this.$store.commit("showCandles", obj.target.checked);
     },
     async changeCandles() {
       //   this.interval = await this.$el.querySelector(
