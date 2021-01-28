@@ -264,7 +264,7 @@ export default {
         price: tmp.markPrice,
       };
 
-      //console.log(this.ticker);
+      console.log("ticker:", this.ticker.price);
     },
     // async getCandles() {
     //   let candles = await client.futuresCandles({
@@ -296,6 +296,7 @@ export default {
               this.INTERVAL
             );
           }
+          console.log("mark price:", this.position[0].markPrice);
           this.ticker.price = this.position[0].markPrice;
           this.ticker.symbol = this.position[0].symbol;
         } else {
